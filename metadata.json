@@ -1,0 +1,7 @@
+{
+  "name": "Confident Communicator",
+  "description": "Practice your speaking skills in real-time with an AI conversation partner. Get live transcriptions and build your confidence through conversation.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
