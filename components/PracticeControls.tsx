@@ -6,6 +6,8 @@ interface PracticeControlsProps {
   onRecord: () => void;
   onNextTurn: () => void;
   onRetry: () => void;
+  inputMode?: 'voice' | 'text';
+  onChangeInputMode?: (mode: 'voice' | 'text') => void;
 }
 
 const MicrophoneIcon: React.FC<{ isListening: boolean }> = ({ isListening }) => (
@@ -28,9 +30,9 @@ const RetryIcon: React.FC = () => (
 );
 
 
-export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRecord, onNextTurn, onRetry }) => {
-    
-    const showRecordButton = ['ready', 'listening'].includes(status);
+export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRecord, onNextTurn, onRetry, inputMode = 'voice', onChangeInputMode }) => {
+
+    const showRecordButton = inputMode === 'voice' && ['ready', 'listening'].includes(status);
     const showNextButton = status === 'turn-complete';
     const showErrorButtons = status === 'error';
     const showPermissionDenied = status === 'permission-denied';
@@ -46,8 +48,13 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
         }
     }
     
+    const handleInputModeToggle = () => {
+        if (!onChangeInputMode) return;
+        onChangeInputMode(inputMode === 'voice' ? 'text' : 'voice');
+    };
+
     return (
-        <div className="w-full flex flex-col items-center justify-center h-24">
+        <div className="w-full flex flex-col items-center justify-center h-24 gap-3">
             {showRecordButton && (
                 <button
                     onClick={onRecord}
@@ -55,6 +62,16 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
                     aria-label={status === 'listening' ? 'Stop recording' : 'Start recording'}
                 >
                     <MicrophoneIcon isListening={status === 'listening'} />
+                </button>
+            )}
+
+            {onChangeInputMode && (
+                <button
+                    type="button"
+                    onClick={handleInputModeToggle}
+                    className="text-xs font-semibold uppercase tracking-wide text-indigo-300 hover:text-indigo-200 transition-colors"
+                >
+                    {inputMode === 'voice' ? 'Prefer typing? Switch to text input' : 'Want to speak instead? Use the microphone'}
                 </button>
             )}
 
