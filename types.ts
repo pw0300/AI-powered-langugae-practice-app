@@ -12,14 +12,6 @@ export type PracticeStatus =
   | 'error'
   | 'permission-denied';
 
-export type PracticeErrorType = 'network' | 'session' | 'audio' | 'unknown';
-
-export interface PracticeErrorInfo {
-  type: PracticeErrorType;
-  message: string;
-  troubleshooting?: string[];
-}
-
 export interface TranscriptLine {
   speaker: 'user' | 'coach';
   text: string;

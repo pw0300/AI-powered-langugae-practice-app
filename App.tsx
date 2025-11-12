@@ -35,7 +35,7 @@ const App: React.FC = () => {
   return (
     <UserPreferencesProvider>
       <GamificationProvider>
-        <div className="bg-slate-900 text-white min-h-screen font-sans flex items-center justify-center">
+        <div className="bg-slate-900 text-white h-screen font-sans">
           <AppContent />
         </div>
       </GamificationProvider>

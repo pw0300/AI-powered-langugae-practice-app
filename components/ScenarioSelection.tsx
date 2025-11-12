@@ -5,11 +5,17 @@ import { RequestScenarioModal } from './RequestScenarioModal';
 import { GamificationHeader } from './GamificationHeader';
 import { useUserPreferences } from '../contexts/UserPreferencesContext';
 import { useGamificationContext } from '../contexts/GamificationContext';
-import { useScenarioPersonalization } from '../hooks/useScenarioPersonalization';
 
 interface ScenarioSelectionProps {
-  onSelectScenario: (scenario: Scenario, personalizedGoal: string | null) => void;
+  onSelectScenario: (scenario: Scenario) => void;
+  personalizingScenarioId: string | null;
 }
+
+const BackIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+    </svg>
+);
 
 const LockIcon: React.FC<{className?: string}> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
@@ -45,7 +51,7 @@ const ScenarioCard: React.FC<{ scenario: Scenario, onSelect: () => void, isPerso
         <button
             onClick={onSelect}
             disabled={isPersonalizing || isLocked}
-            className="w-full text-left p-6 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/80 hover:border-indigo-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:cursor-wait disabled:hover:bg-slate-800/70 disabled:hover:border-slate-700"
+            className="w-full text-left p-4 sm:p-6 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/80 hover:border-indigo-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:cursor-wait disabled:hover:bg-slate-800/70 disabled:hover:border-slate-700"
         >
             {isPersonalizing ? (
                 <div className="flex items-center justify-center h-full py-4">
@@ -55,7 +61,7 @@ const ScenarioCard: React.FC<{ scenario: Scenario, onSelect: () => void, isPerso
             ) : (
                 <div className="flex justify-between items-start gap-4">
                     <div>
-                        <h2 className="text-lg font-semibold text-slate-100">{scenario.title}</h2>
+                        <h2 className="text-base sm:text-lg font-semibold text-slate-100">{scenario.title}</h2>
                         <p className="text-sm text-slate-400 mt-1">{scenario.description}</p>
                     </div>
                     <DifficultyBadge difficulty={scenario.difficulty} />
@@ -72,12 +78,11 @@ const ScenarioCard: React.FC<{ scenario: Scenario, onSelect: () => void, isPerso
     </div>
 );
 
-export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ onSelectScenario }) => {
+export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ onSelectScenario, personalizingScenarioId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { goals, level: userLevelName } = useUserPreferences();
   const gamification = useGamificationContext();
-  const { personalizingScenarioId, personalizeAndSelectScenario } = useScenarioPersonalization({ onSelectScenario });
 
   const availableScenarios = useMemo(() => {
     switch(userLevelName) {
@@ -117,6 +122,10 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ onSelectSc
   return (
     <>
       <div className="w-full max-w-3xl mx-auto animate-fade-in">
+        <div className="text-center my-4 sm:my-6">
+            <h1 className="text-2xl sm:text-3xl font-bold">All Scenarios</h1>
+        </div>
+
         <GamificationHeader />
         
         {recommended.length > 0 && (
@@ -129,7 +138,7 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ onSelectSc
                   <ScenarioCard 
                       key={scenario.id} 
                       scenario={scenario} 
-                      onSelect={() => personalizeAndSelectScenario(scenario)}
+                      onSelect={() => onSelectScenario(scenario)}
                       isPersonalizing={personalizingScenarioId === scenario.id}
                       isLocked={isLocked}
                       unlockLevel={scenario.unlockLevel}
@@ -151,7 +160,7 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ onSelectSc
                 <ScenarioCard 
                   key={scenario.id} 
                   scenario={scenario} 
-                  onSelect={() => personalizeAndSelectScenario(scenario)} 
+                  onSelect={() => onSelectScenario(scenario)} 
                   isPersonalizing={personalizingScenarioId === scenario.id}
                   isLocked={isLocked}
                   unlockLevel={scenario.unlockLevel}

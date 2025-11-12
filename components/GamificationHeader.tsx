@@ -13,16 +13,16 @@ export const GamificationHeader: React.FC = () => {
     const progressPercent = (xpInCurrentLevel / xpForNextLevel) * 100;
 
     return (
-        <div className="mb-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+        <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-slate-800/50 rounded-lg border border-slate-700">
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-sm text-slate-400">Level {level}</p>
-                    <h1 className="text-xl font-bold text-white">{levelName}</h1>
+                    <h1 className="text-lg sm:text-xl font-bold text-white">{levelName}</h1>
                 </div>
                 {streak > 0 && (
                      <div className="flex items-center gap-2 text-orange-400 bg-orange-400/20 px-3 py-1 rounded-full">
                         <StreakIcon className="w-5 h-5" />
-                        <span className="font-bold text-sm">{streak} Day Streak</span>
+                        <span className="font-bold text-xs sm:text-sm">{streak} Day Streak</span>
                     </div>
                 )}
             </div>

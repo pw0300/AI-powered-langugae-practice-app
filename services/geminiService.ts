@@ -66,11 +66,14 @@ export const generateSpeech = async (text: string, speechRate: number): Promise<
   if (!text.trim()) return null;
   try {
     const ai = getAiClient();
-    // FIX: Use SSML to control speech rate, as `speakingRate` is not a valid property in speechConfig.
-    const ssmlText = `<speak><prosody rate="${speechRate}">${text}</prosody></speak>`;
+    
+    // Construct a natural language prompt to control speech rate, which is more reliable than SSML.
+    const rateDescription = speechRate === 1.0 ? 'a normal' : speechRate > 1.0 ? 'a slightly faster' : 'a slightly slower';
+    const promptText = `Speak at ${rateDescription} pace: ${text}`;
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-preview-tts',
-      contents: [{ parts: [{ text: ssmlText }] }],
+      contents: [{ parts: [{ text: promptText }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {

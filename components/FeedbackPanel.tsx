@@ -37,7 +37,7 @@ export const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ feedback }) => {
   return (
     <div className="mt-2 max-w-xl w-full p-4 border border-slate-600 bg-slate-700/50 rounded-lg shadow-md animate-fade-in">
         <div className="flex justify-between items-center mb-3">
-            <h4 className="font-semibold text-md text-slate-200">Instant Feedback</h4>
+            <h4 className="font-semibold text-base sm:text-md text-slate-200">Instant Feedback</h4>
             <ScoreBadge score={feedback.score} />
         </div>
         <div className="space-y-3">

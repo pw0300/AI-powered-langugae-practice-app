@@ -10,6 +10,8 @@ import { scenarios } from '../data/scenarios';
 import { LearningPathView } from './LearningPathView';
 import { generateLearningPath } from '../utils/learningPathGenerator';
 import { ProfileManager } from './ProfileManager';
+import { personalizeScenario } from '../services/geminiService';
+import { BottomNavBar } from './BottomNavBar';
 
 type View = 'path' | 'practice' | 'assessment' | 'scenarios' | 'profile';
 
@@ -21,9 +23,11 @@ export const ConversationManager: React.FC = () => {
   const [lastScenario, setLastScenario] = useState<Scenario | null>(null);
   const [didPass, setDidPass] = useState(false);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
+  const [practiceSessionKey, setPracticeSessionKey] = useState(1);
+  const [personalizingScenarioId, setPersonalizingScenarioId] = useState<string | null>(null);
 
   const { addXpAndCheckAchievements, completedScenarios } = useGamificationContext();
-  const { goals } = useUserPreferences();
+  const { goals, level, language } = useUserPreferences();
 
   const learningPath = useMemo(() => generateLearningPath(scenarios, goals), [goals]);
   const findNextScenario = () => {
@@ -34,6 +38,14 @@ export const ConversationManager: React.FC = () => {
     setActiveScenario(scenario);
     setPersonalizedGoal(pGoal);
     setCurrentView('practice');
+    setPracticeSessionKey(k => k + 1); // Ensure new session is fresh
+  };
+
+  const handlePersonalizeAndSelect = async (scenario: Scenario) => {
+    setPersonalizingScenarioId(scenario.id);
+    const { scenario: personalized, personalizedGoal } = await personalizeScenario(scenario, goals, level, language!);
+    setPersonalizingScenarioId(null);
+    handleSelectScenario(personalized, personalizedGoal);
   };
 
   const handleEndPractice = () => {
@@ -41,6 +53,10 @@ export const ConversationManager: React.FC = () => {
     setLastScorecard(null);
     setLastScenario(null);
     setCurrentView('path');
+  };
+  
+  const restartPractice = () => {
+    setPracticeSessionKey(k => k + 1);
   };
 
   const handlePracticeComplete = (scorecard: Scorecard, scenario: Scenario, passed: boolean) => {
@@ -58,8 +74,7 @@ export const ConversationManager: React.FC = () => {
   const handleGoToNext = () => {
     const nextScenario = findNextScenario();
     if(nextScenario) {
-        // Find if personalization is applicable. Since we are on a path, let's not re-personalize.
-        handleSelectScenario(nextScenario, null); 
+        handlePersonalizeAndSelect(nextScenario); 
     } else {
         setCurrentView('path'); // Or a "path complete" view
     }
@@ -71,10 +86,12 @@ export const ConversationManager: React.FC = () => {
         if (activeScenario) {
           return (
             <PracticeView
+              key={practiceSessionKey}
               scenario={activeScenario}
               personalizedGoal={personalizedGoal}
               onEndPractice={handleEndPractice}
               onPracticeComplete={handlePracticeComplete}
+              onRestartPractice={restartPractice}
             />
           );
         }
@@ -86,7 +103,7 @@ export const ConversationManager: React.FC = () => {
               scorecard={lastScorecard}
               scenario={lastScenario}
               didPass={didPass}
-              onRetry={() => handleSelectScenario(lastScenario, personalizedGoal)}
+              onRetry={() => handlePersonalizeAndSelect(lastScenario)}
               onNext={handleGoToNext}
               onBack={handleEndPractice}
               nextScenarioTitle={findNextScenario()?.title}
@@ -95,43 +112,45 @@ export const ConversationManager: React.FC = () => {
         }
         return <p>Loading assessment...</p>;
       case 'scenarios':
-          return <ScenarioSelection onSelectScenario={handleSelectScenario} />;
+          return <ScenarioSelection 
+            onSelectScenario={handlePersonalizeAndSelect}
+            personalizingScenarioId={personalizingScenarioId}
+          />;
       case 'profile':
           return <ProfileManager 
-            onBack={() => setCurrentView('path')}
             onSelectScenario={(scenarioId: string) => {
                 const scenario = scenarios.find(s => s.id === scenarioId);
                 if (scenario) {
-                    // A proper implementation might trigger personalization here.
-                    // For now, select it without a personalized goal.
-                    handleSelectScenario(scenario, null);
+                    handlePersonalizeAndSelect(scenario);
                 }
             }}
           />;
       case 'path':
       default:
         return (
-             <div className="w-full max-w-4xl mx-auto p-4">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold">Your Practice Plan</h1>
-                    <div>
-                        <button onClick={() => setCurrentView('scenarios')} className="text-indigo-400 hover:text-indigo-300 mr-4">All Scenarios</button>
-                        <button onClick={() => setCurrentView('profile')} className="text-indigo-400 hover:text-indigo-300">My Progress</button>
-                    </div>
-                </div>
-                <LearningPathView 
-                    path={learningPath} 
-                    completedScenarios={completedScenarios} 
-                    onSelectScenario={(scenario) => handleSelectScenario(scenario, null)} // Let's not personalize from the path view for simplicity. Personalization happens in ScenarioSelection view.
-                />
-            </div>
+             <LearningPathView 
+                path={learningPath} 
+                completedScenarios={completedScenarios} 
+                onSelectScenario={handlePersonalizeAndSelect}
+                personalizingScenarioId={personalizingScenarioId}
+            />
         );
     }
   };
 
+  const showNavBar = ['path', 'scenarios', 'profile'].includes(currentView);
+
   return (
-    <div className="w-full h-full">
-      {renderContent()}
+    <div className="w-full h-full flex flex-col">
+      <main className="flex-grow overflow-y-auto p-4">
+        {renderContent()}
+      </main>
+       {showNavBar && (
+        <BottomNavBar 
+            currentView={currentView}
+            onNavigate={(view) => setCurrentView(view)}
+        />
+      )}
       {newlyUnlocked.map((ach) => (
         <AchievementToast
           key={ach.id}

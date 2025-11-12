@@ -39,15 +39,15 @@ export const PracticeHeader: React.FC<PracticeHeaderProps> = ({ title, currentTu
       <div className="flex items-center justify-between py-2 border-b border-slate-700">
         <button onClick={onBack} className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors p-2 rounded-md">
             <BackIcon className="w-5 h-5" />
-            End Practice
+            <span className="hidden sm:inline">End Practice</span>
         </button>
         <button onClick={onCustomize} className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors p-2 rounded-md">
             <CustomizeIcon className="w-4 h-4" />
-            Customize Persona
+            <span className="hidden sm:inline">Customize Persona</span>
         </button>
       </div>
        <div className="text-center pt-4">
-          <h2 className="text-xl font-bold text-slate-100">{title}</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-slate-100">{title}</h2>
            {personalizedGoal && (
             <div className="flex items-center justify-center mt-2">
               <span className="text-xs bg-indigo-600/50 text-indigo-300 font-semibold px-2 py-1 rounded-full">

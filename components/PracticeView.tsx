@@ -7,19 +7,22 @@ import { StatusIndicator } from './StatusIndicator';
 import { FeedbackPanel } from './FeedbackPanel';
 import { PracticeHeader } from './PracticeHeader';
 import { CustomizePersonaModal } from './CustomizePersonaModal';
+import { AssessmentLoadingView } from './AssessmentLoadingView';
 
 interface PracticeViewProps {
   scenario: Scenario;
   personalizedGoal: string | null;
   onEndPractice: () => void;
   onPracticeComplete: (scorecard: Scorecard, scenario: Scenario, didPass: boolean) => void;
+  onRestartPractice: () => void;
 }
 
 export const PracticeView: React.FC<PracticeViewProps> = ({ 
     scenario: initialScenario, 
     personalizedGoal, 
     onEndPractice, 
-    onPracticeComplete 
+    onPracticeComplete,
+    onRestartPractice
 }) => {
   const [scenario, setScenario] = useState(initialScenario);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
@@ -49,15 +52,11 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   };
   
   if (status === 'assessing-final' && !finalScorecard) {
-    return ( // Loading state for final assessment
-         <div className="flex flex-col items-center justify-center h-screen w-screen p-4">
-            <StatusIndicator status="assessing-final" />
-         </div>
-    );
+    return <AssessmentLoadingView />;
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen max-w-3xl mx-auto p-4 bg-slate-900">
+    <div className="flex flex-col h-screen w-screen max-w-3xl mx-auto p-2 sm:p-4 bg-slate-900">
       <PracticeHeader 
         title={scenario.title} 
         currentTurn={currentTurn} 
@@ -78,7 +77,8 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
           status={status} 
           onRecord={toggleRecording} 
           onNextTurn={proceedToNextTurn}
-          onRetry={onEndPractice}
+          onRetry={onRestartPractice}
+          onEnd={onEndPractice}
         />
       </footer>
       

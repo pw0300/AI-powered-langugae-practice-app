@@ -6,8 +6,7 @@ interface PracticeControlsProps {
   onRecord: () => void;
   onNextTurn: () => void;
   onRetry: () => void;
-  inputMode?: 'voice' | 'text';
-  onChangeInputMode?: (mode: 'voice' | 'text') => void;
+  onEnd?: () => void;
 }
 
 const MicrophoneIcon: React.FC<{ isListening: boolean }> = ({ isListening }) => (
@@ -30,9 +29,9 @@ const RetryIcon: React.FC = () => (
 );
 
 
-export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRecord, onNextTurn, onRetry, inputMode = 'voice', onChangeInputMode }) => {
-
-    const showRecordButton = inputMode === 'voice' && ['ready', 'listening'].includes(status);
+export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRecord, onNextTurn, onRetry, onEnd }) => {
+    
+    const showRecordButton = ['ready', 'listening'].includes(status);
     const showNextButton = status === 'turn-complete';
     const showErrorButtons = status === 'error';
     const showPermissionDenied = status === 'permission-denied';
@@ -48,37 +47,22 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
         }
     }
     
-    const handleInputModeToggle = () => {
-        if (!onChangeInputMode) return;
-        onChangeInputMode(inputMode === 'voice' ? 'text' : 'voice');
-    };
-
     return (
-        <div className="w-full flex flex-col items-center justify-center h-24 gap-3">
+        <div className="w-full flex flex-col items-center justify-center h-24">
             {showRecordButton && (
                 <button
                     onClick={onRecord}
-                    className="flex flex-col items-center justify-center w-20 h-20 bg-indigo-600 rounded-full transition-transform duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500"
+                    className="flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-indigo-600 rounded-full transition-transform duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500"
                     aria-label={status === 'listening' ? 'Stop recording' : 'Start recording'}
                 >
                     <MicrophoneIcon isListening={status === 'listening'} />
                 </button>
             )}
 
-            {onChangeInputMode && (
-                <button
-                    type="button"
-                    onClick={handleInputModeToggle}
-                    className="text-xs font-semibold uppercase tracking-wide text-indigo-300 hover:text-indigo-200 transition-colors"
-                >
-                    {inputMode === 'voice' ? 'Prefer typing? Switch to text input' : 'Want to speak instead? Use the microphone'}
-                </button>
-            )}
-
             {showNextButton && (
                 <button
                     onClick={onNextTurn}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-200 animate-fade-in"
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 sm:px-8 rounded-full transition-colors duration-200 animate-fade-in"
                 >
                     Continue <NextIcon />
                 </button>
@@ -86,11 +70,19 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
             
             {showErrorButtons && (
                  <div className="flex items-center gap-4 animate-fade-in">
+                    {onEnd && (
+                         <button
+                            onClick={onEnd}
+                            className="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-5 sm:py-3 sm:px-6 rounded-full transition-colors duration-200"
+                        >
+                           End Practice
+                        </button>
+                    )}
                     <button
                         onClick={onRetry}
-                        className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-200"
+                        className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-5 sm:py-3 sm:px-6 rounded-full transition-colors duration-200"
                     >
-                       End Practice <RetryIcon />
+                       Retry Session <RetryIcon />
                     </button>
                 </div>
             )}

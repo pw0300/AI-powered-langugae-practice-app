@@ -26,15 +26,15 @@ export const GoalSelectionView: React.FC<GoalSelectionViewProps> = ({ onContinue
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 text-center animate-fade-in">
-      <h1 className="text-3xl font-bold text-white mb-2">What are your goals?</h1>
-      <p className="text-lg text-slate-400 mb-8">Select one or more areas you'd like to improve in. We'll tailor your practice scenarios accordingly.</p>
+      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">What are your goals?</h1>
+      <p className="text-base sm:text-lg text-slate-400 mb-6 sm:mb-8">Select one or more areas you'd like to improve in. We'll tailor your practice scenarios accordingly.</p>
       
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         {goals.map(goal => (
           <button
             key={goal.id}
             onClick={() => toggleGoal(goal.id)}
-            className={`p-6 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
+            className={`p-4 sm:p-6 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
               ${selectedGoals.includes(goal.id)
                 ? 'bg-indigo-600 border-indigo-500 text-white'
                 : 'bg-slate-800 border-slate-700 hover:border-indigo-500 hover:bg-slate-700'

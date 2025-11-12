@@ -30,7 +30,7 @@ export const RequestScenarioModal: React.FC<RequestScenarioModalProps> = ({ isOp
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg p-6 animate-fade-in" onClick={e => e.stopPropagation()}>
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg p-4 sm:p-6 animate-fade-in" onClick={e => e.stopPropagation()}>
         {isSubmitted ? (
             <div className="text-center py-10">
                 <h2 className="text-2xl font-bold text-emerald-400 mb-2">Thank you!</h2>
@@ -39,7 +39,7 @@ export const RequestScenarioModal: React.FC<RequestScenarioModalProps> = ({ isOp
         ) : (
             <>
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-white">Request a New Scenario</h2>
+                    <h2 className="text-lg sm:text-xl font-bold text-white">Request a New Scenario</h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-white">&times;</button>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">

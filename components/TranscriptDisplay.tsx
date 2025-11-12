@@ -23,7 +23,7 @@ export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript
           }`}
         >
           <div
-            className={`max-w-md lg:max-w-lg px-4 py-2 rounded-xl ${
+            className={`max-w-[85%] sm:max-w-md lg:max-w-lg px-4 py-2 rounded-xl ${
               line.speaker === 'user'
                 ? 'bg-indigo-600 text-white rounded-br-none'
                 : 'bg-slate-600 text-slate-200 rounded-bl-none'
@@ -38,7 +38,7 @@ export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript
           className={`flex items-end gap-2 justify-end animate-fade-in`}
         >
           <div
-            className={`max-w-md lg:max-w-lg px-4 py-2 rounded-xl bg-indigo-600/70 text-white/90 rounded-br-none`}
+            className={`max-w-[85%] sm:max-w-md lg:max-w-lg px-4 py-2 rounded-xl bg-indigo-600/70 text-white/90 rounded-br-none`}
           >
             <p className="text-sm italic">{liveTranscription}</p>
           </div>
