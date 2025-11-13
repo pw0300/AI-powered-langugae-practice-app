@@ -63,5 +63,6 @@ export interface Achievement {
   name: string;
   description: string;
   icon: string;
+  associatedScenarioId?: string;
   condition: (scorecard: Scorecard, scenario: Scenario) => boolean;
 }

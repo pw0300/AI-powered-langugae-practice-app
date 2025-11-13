@@ -15,6 +15,7 @@ export const achievements: Achievement[] = [
     name: 'De-escalation Expert',
     description: 'Ace the "Unhappy Customer" scenario with a high score.',
     icon: '🛡️',
+    associatedScenarioId: 'customer-support-1',
     condition: (scorecard, scenario) => {
       return scenario.id === 'customer-support-1' && scorecard.overallScore >= 85;
     },
@@ -24,6 +25,7 @@ export const achievements: Achievement[] = [
     name: 'Interview Ace',
     description: 'Impress the hiring manager in the job interview.',
     icon: '💼',
+    associatedScenarioId: 'job-interview-1',
     condition: (scorecard, scenario) => {
       return scenario.id === 'job-interview-1' && scorecard.overallScore >= 90;
     },
@@ -33,6 +35,7 @@ export const achievements: Achievement[] = [
     name: 'Salary Sensei',
     description: 'Successfully negotiate a better salary.',
     icon: '💰',
+    associatedScenarioId: 'negotiation-1',
     condition: (scorecard, scenario) => {
       return scenario.id === 'negotiation-1' && scorecard.overallScore >= 80;
     },
@@ -42,6 +45,7 @@ export const achievements: Achievement[] = [
     name: 'Feedback Guru',
     description: 'Handle the difficult feedback scenario with grace.',
     icon: '✨',
+    associatedScenarioId: 'feedback-delivery-1',
     condition: (scorecard, scenario) => {
       return scenario.id === 'feedback-delivery-1' && scorecard.overallScore >= 75;
     },

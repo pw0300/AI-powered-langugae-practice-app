@@ -2,7 +2,6 @@ import React from 'react';
 import { useGamificationContext } from '../contexts/GamificationContext';
 import { achievements } from '../data/achievements';
 import { scenarios } from '../data/scenarios';
-import type { Scorecard } from '../types';
 import { GamificationHeader } from './GamificationHeader';
 
 interface ProfileViewProps {
@@ -18,14 +17,6 @@ const StatCard: React.FC<{ label: string; value: string | number }> = ({ label, 
 
 export const ProfileView: React.FC<ProfileViewProps> = ({ onSelectScenario }) => {
     const { unlockedAchievements, completedScenarios } = useGamificationContext();
-
-    // This is a dummy for the achievement condition check.
-     const dummyScorecardForLink: Scorecard = {
-        overallScore: 100,
-        strengths: [],
-        areasForImprovement: [],
-        criteriaScores: [],
-    };
 
     return (
         <div className="w-full max-w-4xl mx-auto animate-fade-in">
@@ -43,7 +34,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onSelectScenario }) =>
                 {unlockedAchievements.length > 0 ? (
                     <div className="space-y-3">
                     {achievements.filter(a => unlockedAchievements.includes(a.id)).map(ach => {
-                       const scenarioForAchievement = scenarios.find(s => ach.condition(dummyScorecardForLink, s));
+                       const scenarioForAchievement = ach.associatedScenarioId
+                        ? scenarios.find(s => s.id === ach.associatedScenarioId)
+                        : null;
                        return (
                         <button 
                             key={ach.id}

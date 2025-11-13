@@ -42,7 +42,7 @@ export const PracticeHeader: React.FC<PracticeHeaderProps> = ({ title, currentTu
             <span className="hidden sm:inline">End Practice</span>
         </button>
         <button onClick={onCustomize} className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors p-2 rounded-md">
-            <CustomizeIcon className="w-4 h-4" />
+            <CustomizeIcon className="w-5 h-5" />
             <span className="hidden sm:inline">Customize Persona</span>
         </button>
       </div>
