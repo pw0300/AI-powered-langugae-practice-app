@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { useUserPreferences } from '../contexts/UserPreferencesContext';
+import { useUserPreferences } from '../contexts/UserContext';
 
 const rates = [
   { label: 'Slower', value: 0.8 },

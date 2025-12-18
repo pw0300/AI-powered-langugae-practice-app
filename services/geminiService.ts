@@ -1,4 +1,5 @@
-import { GoogleGenAI, Modality, Blob, Type } from '@google/genai';
+
+import { GoogleGenAI, Modality, Blob, Type, GenerateContentResponse } from '@google/genai';
 import { encode } from '../utils/audio';
 import type { Scenario, TurnFeedback, Scorecard, TranscriptLine } from '../types';
 import { 
@@ -12,6 +13,36 @@ import {
 
 // Per guidelines, create a new instance right before making an API call to ensure the latest API key is used.
 const getAiClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY! });
+
+// --- UTILITIES ---
+
+const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
+
+/**
+ * Wraps a promise with a timeout.
+ */
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number = DEFAULT_TIMEOUT_MS): Promise<T> => {
+    return Promise.race([
+        promise,
+        new Promise<T>((_, reject) => 
+            setTimeout(() => reject(new Error(`API request timed out after ${timeoutMs}ms`)), timeoutMs)
+        )
+    ]);
+};
+
+/**
+ * Safely parses JSON from a string, handling markdown code blocks often returned by LLMs.
+ */
+const safeParseJSON = <T>(text: string): T | null => {
+    try {
+        // Remove markdown code blocks if present (e.g. ```json ... ```)
+        let cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(cleanText) as T;
+    } catch (error) {
+        console.error("JSON Parse Error. Raw text:", text, error);
+        return null;
+    }
+};
 
 /**
  * Creates a Blob object for the Live API from raw audio data.
@@ -71,7 +102,7 @@ export const generateSpeech = async (text: string, speechRate: number): Promise<
     const rateDescription = speechRate === 1.0 ? 'a normal' : speechRate > 1.0 ? 'a slightly faster' : 'a slightly slower';
     const promptText = `Speak at ${rateDescription} pace: ${text}`;
 
-    const response = await ai.models.generateContent({
+    const response = await withTimeout<GenerateContentResponse>(ai.models.generateContent({
       model: 'gemini-2.5-flash-preview-tts',
       contents: [{ parts: [{ text: promptText }] }],
       config: {
@@ -82,7 +113,8 @@ export const generateSpeech = async (text: string, speechRate: number): Promise<
           },
         },
       },
-    });
+    }), 15000); // Shorter timeout for TTS
+    
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     return base64Audio || null;
   } catch (error) {
@@ -123,18 +155,16 @@ export const getTurnFeedback = async (
         const ai = getAiClient();
         const prompt = getTurnFeedbackPrompt(scenario, conversationHistory, language);
 
-        const response = await ai.models.generateContent({
+        const response = await withTimeout<GenerateContentResponse>(ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
                 responseSchema: turnFeedbackSchema,
             },
-        });
+        }));
         
-        const jsonText = response.text.trim();
-        const feedback = JSON.parse(jsonText) as TurnFeedback;
-        return feedback;
+        return safeParseJSON<TurnFeedback>((response.text || "").trim());
 
     } catch (error) {
         console.error("Error getting turn feedback:", error);
@@ -188,18 +218,17 @@ export const getFinalAssessment = async (
         const ai = getAiClient();
         const prompt = getFinalAssessmentPrompt(scenario, conversationHistory, language);
         
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Use a more powerful model for final assessment
+        // Use gemini-3-pro-preview for complex reasoning tasks like final assessment
+        const response = await withTimeout<GenerateContentResponse>(ai.models.generateContent({
+            model: 'gemini-3-pro-preview', 
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
                 responseSchema: scorecardSchema,
             },
-        });
+        }), 45000);
 
-        const jsonText = response.text.trim();
-        const scorecard = JSON.parse(jsonText) as Scorecard;
-        return scorecard;
+        return safeParseJSON<Scorecard>((response.text || "").trim());
 
     } catch (error) {
         console.error("Error getting final assessment:", error);
@@ -217,11 +246,11 @@ export const getLocalizedInitialTurn = async (scenario: Scenario, language: stri
     try {
         const ai = getAiClient();
         const prompt = getLocalizedInitialTurnPrompt(scenario, language);
-        const response = await ai.models.generateContent({
+        const response = await withTimeout<GenerateContentResponse>(ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
-        });
-        return response.text.trim();
+        }));
+        return (response.text || "").trim();
     } catch (error) {
         console.error("Error getting initial turn:", error);
         return scenario.initialTurn; // Fallback to English
@@ -240,14 +269,14 @@ export const generateCoachResponse = async (
     try {
         const ai = getAiClient();
         const prompt = generateCoachResponsePrompt(scenario, conversationHistory, language, level);
-        const response = await ai.models.generateContent({
+        const response = await withTimeout<GenerateContentResponse>(ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
-        });
-        return response.text.trim();
+        }));
+        return (response.text || "").trim();
     } catch (error) {
         console.error("Error generating coach response:", error);
-        return "I'm sorry, I seem to have lost my train of thought. Let's try that again.";
+        return "I'm having trouble thinking of a response right now. Let's continue.";
     }
 };
 
@@ -292,18 +321,18 @@ export const personalizeScenario = async (
         const ai = getAiClient();
         const prompt = getPersonalizationPrompt(template, goals, level, language);
 
-        const response = await ai.models.generateContent({
+        const response = await withTimeout<GenerateContentResponse>(ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
                 responseMimeType: 'application/json',
                 responseSchema: personalizedScenarioSchema,
             },
-        });
+        }));
         
-        const jsonText = response.text.trim();
-        const personalizedData = JSON.parse(jsonText) as { scenario: Scenario; personalizedGoal: string | null };
-        return personalizedData;
+        const result = safeParseJSON<{ scenario: Scenario; personalizedGoal: string | null }>((response.text || "").trim());
+        if (!result) throw new Error("Parsed JSON was null");
+        return result;
 
     } catch (error) {
         console.error("Error personalizing scenario:", error);

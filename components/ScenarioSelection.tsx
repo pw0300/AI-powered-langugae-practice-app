@@ -1,9 +1,10 @@
+
 import React, { useState, useMemo } from 'react';
 import type { Scenario } from '../types';
 import { scenarios } from '../data/scenarios';
 import { RequestScenarioModal } from './RequestScenarioModal';
 import { GamificationHeader } from './GamificationHeader';
-import { useUserPreferences } from '../contexts/UserPreferencesContext';
+import { useUserPreferences } from '../contexts/UserContext';
 import { useGamificationContext } from '../contexts/GamificationContext';
 
 interface ScenarioSelectionProps {

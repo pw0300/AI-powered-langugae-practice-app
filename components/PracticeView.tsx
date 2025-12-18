@@ -82,7 +82,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         />
       </footer>
       
-      <CustomizePersonaModal
+      <CustomizePersonaModal 
         isOpen={isPersonaModalOpen}
         onClose={() => setIsPersonaModalOpen(false)}
         onSubmit={handleCustomizePersona}
@@ -90,4 +90,3 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
       />
     </div>
   );
-};

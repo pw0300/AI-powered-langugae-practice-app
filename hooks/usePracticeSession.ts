@@ -1,6 +1,8 @@
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Scenario, TranscriptLine, TurnFeedback, Scorecard, PracticeStatus } from '../types';
-import { useUserPreferences } from '../contexts/UserPreferencesContext';
+import { useUserPreferences } from '../contexts/UserContext';
+import { useToast } from '../contexts/ToastContext';
 import {
   connectToGemini,
   createPcmBlob,
@@ -26,30 +28,40 @@ export const usePracticeSession = (scenario: Scenario) => {
   const [didPass, setDidPass] = useState(false);
 
   const { language, level, speechRate } = useUserPreferences();
+  const { showToast } = useToast();
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
   const fullTranscriptionRef = useRef('');
 
   const cleanup = useCallback(() => {
     console.log('Cleaning up practice session...');
-    sessionPromiseRef.current?.then(session => session.close());
+    sessionPromiseRef.current?.then(session => session.close()).catch(e => console.warn("Error closing session", e));
     closeAudioContexts();
     sessionPromiseRef.current = null;
   }, []);
   
   const { startRecording, stopRecording, error: audioError } = useAudioProcessor({
     onAudioProcess: useCallback((data: Float32Array) => {
-      const pcmBlob = createPcmBlob(data);
-      sessionPromiseRef.current?.then((session) => {
-        session.sendRealtimeInput({ media: pcmBlob });
-      });
+      // Only send data if the session is active and we are in listening state
+      if (sessionPromiseRef.current) {
+        const pcmBlob = createPcmBlob(data);
+        sessionPromiseRef.current.then((session) => {
+          try {
+             session.sendRealtimeInput({ media: pcmBlob });
+          } catch (e) {
+              console.warn("Failed to send realtime input:", e);
+          }
+        });
+      }
     }, []),
   });
 
+  // Handle Audio Permissions
   useEffect(() => {
     if (audioError) {
       setStatus('permission-denied');
+      showToast(audioError, 'error');
     }
-  }, [audioError]);
+  }, [audioError, showToast]);
 
   useEffect(() => {
     // This effect runs once when the component mounts with a scenario.
@@ -87,7 +99,8 @@ export const usePracticeSession = (scenario: Scenario) => {
           onerror: (e: ErrorEvent) => {
             if (!isMounted) return;
             console.error('Gemini session error:', e);
-            setStatus('error');
+            // Don't kill the session immediately on minor errors, but log them
+            // showToast("Connection unstable...", 'info');
           },
           onclose: (e: CloseEvent) => {
             if (!isMounted) return;
@@ -113,6 +126,7 @@ export const usePracticeSession = (scenario: Scenario) => {
         console.error('Failed to start session:', err);
         if (isMounted) {
           setStatus('error');
+          showToast("Failed to start session. Please check your connection.", 'error');
         }
       }
     };
@@ -123,10 +137,11 @@ export const usePracticeSession = (scenario: Scenario) => {
       isMounted = false;
       cleanup();
     };
-  }, [scenario, language, level, speechRate, cleanup]); // Rerun if scenario changes
+  }, [scenario, language, level, speechRate, cleanup, showToast]); // Rerun if scenario changes
 
   const processUserTurn = useCallback(async (userText: string) => {
-    if (!userText.trim()) {
+    if (!userText || !userText.trim()) {
+      showToast("I didn't catch that. Please try speaking again.", 'info');
       setStatus('ready');
       return;
     }
@@ -142,8 +157,9 @@ export const usePracticeSession = (scenario: Scenario) => {
     } else {
       console.error("Failed to get turn feedback.");
       setStatus('error');
+      showToast("Unable to evaluate response. Please try again.", 'error');
     }
-  }, [transcript, scenario, language]);
+  }, [transcript, scenario, language, showToast]);
 
   const toggleRecording = useCallback(async () => {
     if (status === 'ready') {
@@ -154,12 +170,20 @@ export const usePracticeSession = (scenario: Scenario) => {
     } else if (status === 'listening') {
       stopRecording();
       setStatus('processing');
-      // Give a moment for final transcription to arrive
+      // Give a moment for final transcription to arrive from the socket
+      // This simple delay is a robust way to handle network latency for the final packet.
+      // We also add a check to ensure we don't process empty input if the user clicked too fast.
       setTimeout(() => {
-        processUserTurn(fullTranscriptionRef.current);
-      }, 1000); // Small delay to catch trailing transcription
+        const text = fullTranscriptionRef.current;
+        if (text && text.trim().length > 0) {
+            processUserTurn(text);
+        } else {
+            showToast("No speech detected. Please try again.", "info");
+            setStatus('ready');
+        }
+      }, 1500); 
     }
-  }, [status, startRecording, stopRecording, processUserTurn]);
+  }, [status, startRecording, stopRecording, processUserTurn, showToast]);
   
   const startFinalAssessment = useCallback(async () => {
     setStatus('assessing-final');
@@ -172,8 +196,9 @@ export const usePracticeSession = (scenario: Scenario) => {
     } else {
       console.error("Failed to get final assessment.");
       setStatus('error');
+      showToast("Failed to generate final report. Please try again.", 'error');
     }
-  }, [scenario, transcript, language]);
+  }, [scenario, transcript, language, showToast]);
   
   const proceedToNextTurn = useCallback(async () => {
     setTurnFeedback(null);
@@ -190,6 +215,7 @@ export const usePracticeSession = (scenario: Scenario) => {
     const coachResponseText = await generateCoachResponse(scenario, transcript, language!, level);
     setTranscript(prev => [...prev, { speaker: 'coach', text: coachResponseText }]);
 
+    // Only set ready after TTS is effectively queued
     speak(coachResponseText, speechRate, () => {
       setStatus('ready');
     });

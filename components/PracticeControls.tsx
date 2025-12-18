@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import type { PracticeStatus } from '../types';
 
 interface PracticeControlsProps {
@@ -30,12 +31,21 @@ const RetryIcon: React.FC = () => (
 
 
 export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRecord, onNextTurn, onRetry, onEnd }) => {
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     
     const showRecordButton = ['ready', 'listening'].includes(status);
     const showNextButton = status === 'turn-complete';
     const showErrorButtons = status === 'error';
     const showPermissionDenied = status === 'permission-denied';
     const isProcessing = ['processing', 'evaluating', 'speaking', 'assessing-final'].includes(status);
+
+    const handleAction = (action: () => void) => {
+        if (isButtonDisabled) return;
+        setIsButtonDisabled(true);
+        action();
+        // Re-enable after a short delay to prevent double-taps
+        setTimeout(() => setIsButtonDisabled(false), 500);
+    };
 
     const getProcessingText = () => {
         switch(status) {
@@ -51,8 +61,9 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
         <div className="w-full flex flex-col items-center justify-center h-24">
             {showRecordButton && (
                 <button
-                    onClick={onRecord}
-                    className="flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-indigo-600 rounded-full transition-transform duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500"
+                    onClick={() => handleAction(onRecord)}
+                    disabled={isButtonDisabled}
+                    className="flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-indigo-600 rounded-full transition-transform duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500 disabled:opacity-75 disabled:cursor-not-allowed disabled:scale-100"
                     aria-label={status === 'listening' ? 'Stop recording' : 'Start recording'}
                 >
                     <MicrophoneIcon isListening={status === 'listening'} />
@@ -61,8 +72,9 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
 
             {showNextButton && (
                 <button
-                    onClick={onNextTurn}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 sm:px-8 rounded-full transition-colors duration-200 animate-fade-in"
+                    onClick={() => handleAction(onNextTurn)}
+                    disabled={isButtonDisabled}
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 sm:px-8 rounded-full transition-colors duration-200 animate-fade-in disabled:opacity-75 disabled:cursor-not-allowed"
                 >
                     Continue <NextIcon />
                 </button>

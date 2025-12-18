@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import type { Scenario, Scorecard, Achievement } from '../types';
 import { ScenarioSelection } from './ScenarioSelection';
@@ -5,7 +6,7 @@ import { PracticeView } from './PracticeView';
 import { AssessmentView } from './AssessmentView';
 import { useGamificationContext } from '../contexts/GamificationContext';
 import { AchievementToast } from './AchievementToast';
-import { useUserPreferences } from '../contexts/UserPreferencesContext';
+import { useUserPreferences } from '../contexts/UserContext';
 import { scenarios } from '../data/scenarios';
 import { LearningPathView } from './LearningPathView';
 import { generateLearningPath } from '../utils/learningPathGenerator';

@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { QuickStartView } from './QuickStartView';
 import { OnboardingPromptView } from './OnboardingPromptView';
 import { OnboardingManager } from './OnboardingManager';
-import { useUserPreferences } from '../contexts/UserPreferencesContext';
+import { useUserPreferences } from '../contexts/UserContext';
 
 interface QuickStartManagerProps {
     onComplete: () => void;
