@@ -90,3 +90,4 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
       />
     </div>
   );
+};
