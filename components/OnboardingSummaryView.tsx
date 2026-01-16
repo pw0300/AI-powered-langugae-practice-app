@@ -53,7 +53,7 @@ export const OnboardingSummaryView: React.FC<OnboardingSummaryViewProps> = ({ go
         </button>
         <button
           onClick={onConfirm}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 sm:px-8 rounded-full transition-colors duration-200"
+          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-6 sm:px-8 rounded-full transition-all duration-200 shadow-lg shadow-blue-500/30 transform hover:scale-105"
         >
           Start Practicing
         </button>

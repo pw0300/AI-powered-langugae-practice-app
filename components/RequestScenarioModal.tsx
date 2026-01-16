@@ -45,23 +45,23 @@ export const RequestScenarioModal: React.FC<RequestScenarioModalProps> = ({ isOp
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label htmlFor="title" className="block text-sm font-medium text-slate-300 mb-1">Scenario Title</label>
-                        <input type="text" name="title" id="title" required value={formData.title} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-indigo-500 focus:border-indigo-500" />
+                        <input type="text" name="title" id="title" required value={formData.title} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-slate-300 mb-1">Description</label>
-                        <textarea name="description" id="description" rows={2} required value={formData.description} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <textarea name="description" id="description" rows={2} required value={formData.description} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
                      <div>
                         <label htmlFor="persona" className="block text-sm font-medium text-slate-300 mb-1">AI Persona</label>
-                        <textarea name="persona" id="persona" rows={2} required value={formData.persona} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., A friendly but busy hiring manager..."></textarea>
+                        <textarea name="persona" id="persona" rows={2} required value={formData.persona} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., A friendly but busy hiring manager..."></textarea>
                     </div>
                      <div>
                         <label htmlFor="criteria" className="block text-sm font-medium text-slate-300 mb-1">Key things to practice</label>
-                        <textarea name="criteria" id="criteria" rows={2} required value={formData.criteria} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Maintaining a confident tone, active listening..."></textarea>
+                        <textarea name="criteria" id="criteria" rows={2} required value={formData.criteria} onChange={handleChange} className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Maintaining a confident tone, active listening..."></textarea>
                     </div>
                     <div className="flex justify-end gap-3 pt-2">
                         <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">Cancel</button>
-                        <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">Submit</button>
+                        <button type="submit" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-full transition-all duration-200 shadow-md">Submit</button>
                     </div>
                 </form>
             </>

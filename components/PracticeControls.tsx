@@ -63,7 +63,7 @@ export const PracticeControls: React.FC<PracticeControlsProps> = ({ status, onRe
                 <button
                     onClick={() => handleAction(onRecord)}
                     disabled={isButtonDisabled}
-                    className="flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-indigo-600 rounded-full transition-transform duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500 disabled:opacity-75 disabled:cursor-not-allowed disabled:scale-100"
+                    className="flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full transition-all duration-200 ease-in-out hover:scale-110 hover:shadow-lg hover:shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500 disabled:opacity-75 disabled:cursor-not-allowed disabled:scale-100 shadow-md"
                     aria-label={status === 'listening' ? 'Stop recording' : 'Start recording'}
                 >
                     <MicrophoneIcon isListening={status === 'listening'} />

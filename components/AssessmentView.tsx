@@ -29,7 +29,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({
                     <button
                         onClick={onNext}
                         disabled={!nextScenarioTitle}
-                        className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-200 disabled:bg-slate-600 disabled:cursor-not-allowed"
+                        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-8 rounded-full transition-all duration-200 shadow-lg shadow-blue-500/30 transform hover:scale-105 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                     >
                         {nextScenarioTitle ? `Next: ${nextScenarioTitle}` : 'Path Complete!'}
                     </button>

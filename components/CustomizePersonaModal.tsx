@@ -41,12 +41,12 @@ export const CustomizePersonaModal: React.FC<CustomizePersonaModalProps> = ({ is
                     required 
                     value={persona} 
                     onChange={(e) => setPersona(e.target.value)} 
-                    className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500"
                 ></textarea>
             </div>
             <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">Cancel</button>
-                <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">Apply & Restart</button>
+                <button type="submit" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-2 px-4 rounded-full transition-all duration-200 shadow-md">Apply & Restart</button>
             </div>
         </form>
       </div>

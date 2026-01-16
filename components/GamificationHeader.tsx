@@ -32,7 +32,7 @@ export const GamificationHeader: React.FC = () => {
                     <span>{xpInCurrentLevel} / {xpForNextLevel} XP</span>
                  </div>
                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div className="bg-indigo-500 h-2 rounded-full" style={{width: `${progressPercent}%`}}></div>
+                    <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500" style={{width: `${progressPercent}%`}}></div>
                  </div>
             </div>
         </div>

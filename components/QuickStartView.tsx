@@ -43,7 +43,7 @@ const QuickStartPractice: React.FC<{ onComplete: () => void; onRetry: () => void
             <ScorecardView scorecard={finalScorecard} />
             <button
                 onClick={onComplete}
-                className="mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-200"
+                className="mt-8 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-8 rounded-full transition-all duration-200 shadow-lg shadow-blue-500/30 transform hover:scale-105"
             >
                 Continue
             </button>

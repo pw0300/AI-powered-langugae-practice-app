@@ -48,7 +48,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onSelectScenario }) =>
                             <div>
                                 <h3 className="font-bold text-amber-400">{ach.name}</h3>
                                 <p className="text-sm text-slate-300">{ach.description}</p>
-                                {scenarioForAchievement && <p className="text-xs text-indigo-400 mt-1">Click to practice this skill</p>}
+                                {scenarioForAchievement && <p className="text-xs text-blue-400 mt-1">Click to practice this skill</p>}
                             </div>
                         </button>
                        )

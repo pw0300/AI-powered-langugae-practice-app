@@ -50,7 +50,7 @@ export const PracticeHeader: React.FC<PracticeHeaderProps> = ({ title, currentTu
           <h2 className="text-lg sm:text-xl font-bold text-slate-100">{title}</h2>
            {personalizedGoal && (
             <div className="flex items-center justify-center mt-2">
-              <span className="text-xs bg-indigo-600/50 text-indigo-300 font-semibold px-2 py-1 rounded-full">
+              <span className="text-xs bg-blue-600/50 text-blue-300 font-semibold px-2 py-1 rounded-full">
                 ✨ Personalized for: {goalDisplayNames[personalizedGoal] || personalizedGoal}
               </span>
             </div>

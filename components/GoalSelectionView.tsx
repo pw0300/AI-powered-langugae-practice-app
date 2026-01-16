@@ -34,10 +34,10 @@ export const GoalSelectionView: React.FC<GoalSelectionViewProps> = ({ onContinue
           <button
             key={goal.id}
             onClick={() => toggleGoal(goal.id)}
-            className={`p-4 sm:p-6 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
+            className={`p-4 sm:p-6 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 transform hover:scale-105
               ${selectedGoals.includes(goal.id)
-                ? 'bg-indigo-600 border-indigo-500 text-white'
-                : 'bg-slate-800 border-slate-700 hover:border-indigo-500 hover:bg-slate-700'
+                ? 'bg-gradient-to-br from-blue-600 to-cyan-600 border-blue-500 text-white shadow-lg shadow-blue-500/30'
+                : 'bg-slate-800 border-slate-700 hover:border-blue-500 hover:bg-slate-700'
               }`}
           >
             <div className="text-4xl mb-2">{goal.icon}</div>
@@ -49,7 +49,7 @@ export const GoalSelectionView: React.FC<GoalSelectionViewProps> = ({ onContinue
       <button
         onClick={() => onContinue(selectedGoals)}
         disabled={selectedGoals.length === 0}
-        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-10 rounded-full transition-colors duration-200 disabled:bg-slate-600 disabled:cursor-not-allowed"
+        className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-10 rounded-full transition-all duration-200 disabled:bg-slate-600 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30 transform hover:scale-105 disabled:transform-none disabled:shadow-none"
       >
         Continue
       </button>

@@ -23,7 +23,7 @@ export const AssessmentLoadingView: React.FC = () => {
 
     return (
         <div className="fixed inset-0 bg-slate-900 bg-opacity-90 backdrop-blur-sm flex flex-col items-center justify-center z-50 animate-fade-in">
-            <div className="w-16 h-16 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
             <h2 className="text-2xl font-bold text-white mt-6">Generating Your Scorecard</h2>
             <p className="text-slate-300 mt-2 transition-opacity duration-500">{message}</p>
         </div>

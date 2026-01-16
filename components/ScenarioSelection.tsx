@@ -30,7 +30,7 @@ const DifficultyBadge: React.FC<{ difficulty: 'easy' | 'medium' | 'hard' | 'supe
         easy: 'bg-emerald-600/50 text-emerald-300',
         medium: 'bg-amber-600/50 text-amber-300',
         hard: 'bg-rose-600/50 text-rose-300',
-        'super hard': 'bg-violet-600/50 text-violet-300',
+        'super hard': 'bg-red-700/50 text-red-300',
     };
     return (
         <span className={`px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${colors[difficulty]}`}>
@@ -52,7 +52,7 @@ const ScenarioCard: React.FC<{ scenario: Scenario, onSelect: () => void, isPerso
         <button
             onClick={onSelect}
             disabled={isPersonalizing || isLocked}
-            className="w-full text-left p-4 sm:p-6 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/80 hover:border-indigo-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:cursor-wait disabled:hover:bg-slate-800/70 disabled:hover:border-slate-700"
+            className="w-full text-left p-4 sm:p-6 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/80 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-wait disabled:hover:bg-slate-800/70 disabled:hover:border-slate-700"
         >
             {isPersonalizing ? (
                 <div className="flex items-center justify-center h-full py-4">
@@ -174,9 +174,9 @@ export const ScenarioSelection: React.FC<ScenarioSelectionProps> = ({ onSelectSc
         <div className="text-center mt-12">
             <button
                 onClick={() => setIsModalOpen(true)}
-                className="w-full text-center p-4 bg-slate-800/50 rounded-lg border-2 border-dashed border-slate-600 hover:border-indigo-500 hover:bg-slate-800/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-400 hover:text-white"
+                className="w-full text-center p-4 bg-slate-800/50 rounded-lg border-2 border-dashed border-slate-600 hover:border-blue-500 hover:bg-slate-800/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-400 hover:text-white"
             >
-                Don't see what you're looking for? <span className="font-semibold text-indigo-400">Request a new scenario.</span>
+                Don't see what you're looking for? <span className="font-semibold text-blue-400">Request a new scenario.</span>
             </button>
         </div>
       </div>

@@ -18,9 +18,9 @@ export const SpeechRateControl: React.FC = () => {
             <button
             key={rate.label}
             onClick={() => setSpeechRate(rate.value)}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors duration-200 ${
+            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all duration-200 ${
                 speechRate === rate.value
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md'
                 : 'text-slate-300 hover:bg-slate-700'
             }`}
             >
