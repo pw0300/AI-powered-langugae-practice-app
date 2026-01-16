@@ -3,8 +3,12 @@ import { decodeBase64, decodePcmAudioData, playAudioBuffer } from './audio';
 
 let currentAudioSource: AudioBufferSourceNode | null = null;
 
-export const speak = async (text: string, speechRate: number, onEndCallback?: () => void) => {
-  // Stop any currently playing audio
+export const speak = async (
+  text: string,
+  speechRate: number,
+  onEndCallback?: () => void,
+  onErrorCallback?: (error: Error) => void
+) => {
   if (currentAudioSource) {
     try {
         currentAudioSource.stop();
@@ -14,7 +18,6 @@ export const speak = async (text: string, speechRate: number, onEndCallback?: ()
     currentAudioSource = null;
   }
 
-  // Avoid API calls for empty or very short text
   if (!text || text.trim().length < 1) {
       if (onEndCallback) onEndCallback();
       return;
@@ -32,11 +35,20 @@ export const speak = async (text: string, speechRate: number, onEndCallback?: ()
             }
         });
     } else {
-        console.error("TTS generation failed, no audio data received.");
-        if (onEndCallback) onEndCallback();
+        const error = new Error("TTS generation failed, no audio data received.");
+        console.error(error.message);
+        if (onErrorCallback) {
+          onErrorCallback(error);
+        } else if (onEndCallback) {
+          onEndCallback();
+        }
     }
   } catch (error) {
     console.error("An error occurred during speech synthesis:", error);
-    if (onEndCallback) onEndCallback();
+    if (onErrorCallback) {
+      onErrorCallback(error as Error);
+    } else if (onEndCallback) {
+      onEndCallback();
+    }
   }
 };

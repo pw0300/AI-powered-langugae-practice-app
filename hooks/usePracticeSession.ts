@@ -14,9 +14,10 @@ import {
 import { useAudioProcessor } from './useAudioProcessor';
 import { speak } from '../utils/speech';
 import { closeAudioContexts } from '../utils/audioContextManager';
+import { isOnline } from '../utils/network';
 
-// Define a constant for the pass threshold
 const PASS_THRESHOLD = 70;
+const MAX_TRANSCRIPT_LINES = 100;
 
 export const usePracticeSession = (scenario: Scenario) => {
   const [status, setStatus] = useState<PracticeStatus>('initializing');
@@ -26,11 +27,31 @@ export const usePracticeSession = (scenario: Scenario) => {
   const [turnFeedback, setTurnFeedback] = useState<TurnFeedback | null>(null);
   const [finalScorecard, setFinalScorecard] = useState<Scorecard | null>(null);
   const [didPass, setDidPass] = useState(false);
+  const [isOffline, setIsOffline] = useState(!isOnline());
 
   const { language, level, speechRate } = useUserPreferences();
   const { showToast } = useToast();
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
   const fullTranscriptionRef = useRef('');
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+      showToast('Connection restored', 'success');
+    };
+    const handleOffline = () => {
+      setIsOffline(true);
+      showToast('No internet connection', 'error');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [showToast]);
 
   const cleanup = useCallback(() => {
     console.log('Cleaning up practice session...');
@@ -116,8 +137,14 @@ export const usePracticeSession = (scenario: Scenario) => {
         if (!isMounted) return;
 
         setTranscript([{ speaker: 'coach', text: initialTurnText }]);
-        
+
         speak(initialTurnText, speechRate, () => {
+          if (isMounted) {
+            setStatus('ready');
+          }
+        }, (error) => {
+          console.error('Initial TTS failed:', error);
+          showToast('Speech playback unavailable. Reading text instead.', 'warning');
           if (isMounted) {
             setStatus('ready');
           }
@@ -145,8 +172,11 @@ export const usePracticeSession = (scenario: Scenario) => {
       setStatus('ready');
       return;
     }
-    
-    const newTranscript = [...transcript, { speaker: 'user' as const, text: userText }];
+
+    let newTranscript = [...transcript, { speaker: 'user' as const, text: userText }];
+    if (newTranscript.length > MAX_TRANSCRIPT_LINES) {
+      newTranscript = newTranscript.slice(-MAX_TRANSCRIPT_LINES);
+    }
     setTranscript(newTranscript);
 
     setStatus('evaluating');
@@ -211,15 +241,24 @@ export const usePracticeSession = (scenario: Scenario) => {
     
     setCurrentTurn(nextTurn);
     setStatus('speaking');
-    
-    const coachResponseText = await generateCoachResponse(scenario, transcript, language!, level);
-    setTranscript(prev => [...prev, { speaker: 'coach', text: coachResponseText }]);
 
-    // Only set ready after TTS is effectively queued
+    const coachResponseText = await generateCoachResponse(scenario, transcript, language!, level);
+    setTranscript(prev => {
+      let newTranscript = [...prev, { speaker: 'coach', text: coachResponseText }];
+      if (newTranscript.length > MAX_TRANSCRIPT_LINES) {
+        newTranscript = newTranscript.slice(-MAX_TRANSCRIPT_LINES);
+      }
+      return newTranscript;
+    });
+
     speak(coachResponseText, speechRate, () => {
       setStatus('ready');
+    }, (error) => {
+      console.error('TTS failed:', error);
+      showToast('Speech playback unavailable. Reading text instead.', 'warning');
+      setStatus('ready');
     });
-  }, [currentTurn, scenario, transcript, language, level, speechRate, startFinalAssessment]);
+  }, [currentTurn, scenario, transcript, language, level, speechRate, startFinalAssessment, showToast]);
   
 
   return {
